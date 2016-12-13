@@ -26,7 +26,7 @@ namespace XamarinChat
         int messageCount = 0;
         private HttpClient _client;
         private Conversation _lastConversation;
-        string DirectLineKey = "[DirectLineKey]";
+        string DirectLineKey = "[DIRECT LINE KEY]";
 
 		//Tracking of which user said what
         User sender = new User { Id = "2CC8343", DisplayName = "You" };
@@ -40,7 +40,8 @@ namespace XamarinChat
         {
             base.ViewDidLoad();
 
-            CollectionView.BackgroundColor = new UIColor(red: 0.00f, green: 0.12f, blue: 0.31f, alpha: 1.0f);
+			//CollectionView.BackgroundColor = new UIColor(red:0.39f, green:0.33f, blue:0.50f, alpha:1.0f);
+			CollectionView.BackgroundColor = new UIColor(red: 0.04f, green: 0.11f, blue: 0.32f, alpha: 1.0f);
             Title = "Xamarin Shopping Bot";
 
 			//instantiate an HTTPClient, and set properties to our DirectLine bot
@@ -72,8 +73,8 @@ namespace XamarinChat
             // These MessagesBubbleImages will be used in the GetMessageBubbleImageData override
             var bubbleFactory = new MessagesBubbleImageFactory();
             outgoingBubbleImageData = bubbleFactory.CreateOutgoingMessagesBubbleImage(UIColorExtensions.MessageBubbleLightGrayColor);
-            incomingBubbleImageData = bubbleFactory.CreateIncomingMessagesBubbleImage(new UIColor(red: 0.88f, green: 0.07f, blue: 0.55f, alpha: 1.0f));
-
+			//incomingBubbleImageData = bubbleFactory.CreateIncomingMessagesBubbleImage(new UIColor(red: 0.31f, green: 0.00f, blue: 0.28f, alpha: 1.0f));
+			incomingBubbleImageData = bubbleFactory.CreateIncomingMessagesBubbleImage(new UIColor(red: 0.51f, green: 0.18f, blue: 0.51f, alpha: 1.0f));
             // Remove the AccessoryButton as we will not be sending pics
             InputToolbar.ContentView.LeftBarButtonItem = null;
 
@@ -83,7 +84,7 @@ namespace XamarinChat
             CollectionView.CollectionViewLayout.OutgoingAvatarViewSize = CoreGraphics.CGSize.Empty;
 
             // Load some messagees to start
-            messages.Add(new Message(friend.Id, friend.DisplayName, NSDate.DistantPast, "I am the Shopping Bot!"));
+            messages.Add(new Message(friend.Id, friend.DisplayName, NSDate.DistantPast, "Welcome to the Xamarin Shop! How may I help you?"));
             FinishReceivingMessage(true);
         }
 
