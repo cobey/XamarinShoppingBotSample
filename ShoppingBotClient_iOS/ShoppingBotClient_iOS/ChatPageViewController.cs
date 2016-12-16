@@ -22,11 +22,12 @@ namespace XamarinChat
     {
 		
         MessagesBubbleImage outgoingBubbleImageData, incomingBubbleImageData;
+		MessagesAvatarImage outgoingAvatar, incomingAvatar;
         List<Message> messages = new List<Message>();
         int messageCount = 0;
         private HttpClient _client;
         private Conversation _lastConversation;
-        string DirectLineKey = "[DIRECT LINE KEY]";
+        string DirectLineKey = "[DirectLineKey]";
 
 		//Tracking of which user said what
         User sender = new User { Id = "2CC8343", DisplayName = "You" };
@@ -41,9 +42,10 @@ namespace XamarinChat
             base.ViewDidLoad();
 
 			//CollectionView.BackgroundColor = new UIColor(red:0.39f, green:0.33f, blue:0.50f, alpha:1.0f);
-			CollectionView.BackgroundColor = new UIColor(red: 0.04f, green: 0.11f, blue: 0.32f, alpha: 1.0f);
-            Title = "Xamarin Shopping Bot";
 
+			//CollectionView.BackgroundColor = new UIColor(red: 0.04f, green: 0.11f, blue: 0.32f, alpha: 1.0f);
+            Title = "Xamarin Shopping Bot";
+			this.NavigationController.NavigationBar.TintColor = new UIColor(red: 0.04f, green: 0.11f, blue: 0.32f, alpha: 1.0f);
 			//instantiate an HTTPClient, and set properties to our DirectLine bot
             _client = new HttpClient();
             _client.BaseAddress = new Uri("https://directline.botframework.com/api/conversations/");
@@ -70,18 +72,22 @@ namespace XamarinChat
             SenderId = sender.Id;
             SenderDisplayName = sender.DisplayName;
 
+            UIImage av = FromUrl("https://raw.githubusercontent.com/Microsoft/XamarinAzure_ShoppingDemoApp/master/Shopping.DemoApp.iOS/Resources/Images.xcassets/AppIcons.appiconset/Icon-83.5%402x.png");
             // These MessagesBubbleImages will be used in the GetMessageBubbleImageData override
             var bubbleFactory = new MessagesBubbleImageFactory();
             outgoingBubbleImageData = bubbleFactory.CreateOutgoingMessagesBubbleImage(UIColorExtensions.MessageBubbleLightGrayColor);
 			//incomingBubbleImageData = bubbleFactory.CreateIncomingMessagesBubbleImage(new UIColor(red: 0.31f, green: 0.00f, blue: 0.28f, alpha: 1.0f));
 			incomingBubbleImageData = bubbleFactory.CreateIncomingMessagesBubbleImage(new UIColor(red: 0.51f, green: 0.18f, blue: 0.51f, alpha: 1.0f));
+            incomingAvatar = new MessagesAvatarImage(av, av, av);
+            //incomingAvatar.AvatarImage = UIImage.FromBundle("headshot");
+            outgoingAvatar = new MessagesAvatarImage(av, av, av);
             // Remove the AccessoryButton as we will not be sending pics
             InputToolbar.ContentView.LeftBarButtonItem = null;
 
 
             // Remove the Avatars
-            CollectionView.CollectionViewLayout.IncomingAvatarViewSize = CoreGraphics.CGSize.Empty;
-            CollectionView.CollectionViewLayout.OutgoingAvatarViewSize = CoreGraphics.CGSize.Empty;
+            //CollectionView.CollectionViewLayout.IncomingAvatarViewSize = CoreGraphics.CGSize.Empty;
+            //CollectionView.CollectionViewLayout.OutgoingAvatarViewSize = CoreGraphics.CGSize.Empty;
 
             // Load some messagees to start
             messages.Add(new Message(friend.Id, friend.DisplayName, NSDate.DistantPast, "Welcome to the Xamarin Shop! How may I help you?"));
@@ -99,6 +105,16 @@ namespace XamarinChat
                 cell.TextView.TextColor = UIColor.Black;
 
             return cell;
+        }
+
+        static UIImage FromUrl(string uri)
+        {
+            var img = new UIImage();
+            using (var url = new NSUrl(uri))
+            using (var data = NSData.FromUrl(url))
+                img = UIImage.LoadFromData(data);
+            //return UIImage.LoadFromData(data);
+            return img;
         }
 
         public override nint GetItemsCount(UICollectionView collectionView, nint section)
@@ -122,7 +138,11 @@ namespace XamarinChat
 
         public override IMessageAvatarImageDataSource GetAvatarImageData(MessagesCollectionView collectionView, NSIndexPath indexPath)
         {
-            return null;
+
+			var message = messages[indexPath.Row];
+			if (message.SenderId == SenderId)
+				return incomingAvatar;
+			return outgoingAvatar;
         }
 
         public override async void PressedSendButton(UIButton button, string text, string senderId, string senderDisplayName, NSDate date)

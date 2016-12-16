@@ -23,7 +23,6 @@ namespace XamarinShoppingBot
         {
             string message = "Sorry, I do not understand. Try asking me for order information or customer service help";
             await context.PostAsync(message);
-            context.Wait(MessageReceived);
             context.Done(true);
         }
 
@@ -201,7 +200,6 @@ namespace XamarinShoppingBot
                     break;
             }
 
-            // context.Wait(MessageReceived);
         }
 
         private async Task UserProvidesNumber(IDialogContext context, IAwaitable<long> result)
@@ -209,8 +207,7 @@ namespace XamarinShoppingBot
             long phoneNumber = await result;
             await context.PostAsync("We will call you at " + phoneNumber.ToString());
 
-            context.Wait(MessageReceived);
-        }
+			context.Done();
 
 
         public static bool IsOdd(int value)
